@@ -326,11 +326,8 @@ let cpTimer         = null;
 // INIT
 // ============================================================
 window.addEventListener('load', function() {
-  // Lire le Row ID depuis l'URL : lien/ROWID
   const params = new URLSearchParams(window.location.search);
-const rowId = params.get('id') || '';
-
-  // Vérifier existence + statut actif dans USERS_DATA
+  const rowId = params.get('id') || '';
   const user = USERS_DATA[rowId];
 
   if (!user || !user.actif) {
@@ -338,9 +335,6 @@ const rowId = params.get('id') || '';
     return;
   }
 
-  currentUser = { rowId, nom: user.nom, prenom: user.prenom };
-
-  // Préparer les dates
   const today    = new Date();
   const tomorrow = new Date();
   tomorrow.setDate(today.getDate() + 1);
@@ -349,16 +343,30 @@ const rowId = params.get('id') || '';
   document.getElementById('label-today').textContent    = formatDateDisplay(today);
   document.getElementById('label-tomorrow').textContent = formatDateDisplay(tomorrow);
 
-  const fullName = user.prenom + ' ' + user.nom;
-  document.getElementById('commercial-name').textContent = fullName;
-  document.getElementById('header-title').textContent    = 'ATTRIBUTION';
+  // Remplir le sélecteur avec les commerciaux actifs
+  const select = document.getElementById('commercial-select');
+  Object.entries(USERS_DATA)
+    .filter(([id, u]) => u.actif)
+    .sort((a, b) => a[1].nom.localeCompare(b[1].nom))
+    .forEach(([id, u]) => {
+      const opt = document.createElement('option');
+      opt.value = id;
+      opt.textContent = u.prenom + ' ' + u.nom;
+      select.appendChild(opt);
+    });
 
-  // Pré-enrichir les clients avec GPS
+  select.addEventListener('change', function() {
+    if (!this.value) return;
+    const u = USERS_DATA[this.value];
+    currentUser = { rowId: this.value, nom: u.nom, prenom: u.prenom };
+    document.getElementById('commercial-name').textContent = u.prenom + ' ' + u.nom;
+    document.getElementById('recap-commercial').textContent = u.prenom + ' ' + u.nom;
+    setTimeout(() => goToStep('date'), 200);
+  });
+
   prepareClients();
-
-  showScreen('date');
+  showScreen('commercial');
 });
-
 // ============================================================
 // PRÉPARER CLIENTS (lookup CP -> GPS une seule fois)
 // ============================================================
@@ -544,7 +552,9 @@ function resetAll() {
   document.getElementById('sel-badge').textContent = '0 sélectionné';
   document.getElementById('sel-badge').classList.remove('active');
   document.getElementById('cancel-btn').style.display = 'none';
-  goToStep('date');
+  document.getElementById('commercial-select').value = '';
+currentUser = null;
+goToStep('commercial');
 }
 
 // ============================================================
@@ -554,7 +564,7 @@ function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
   document.getElementById('back-btn').classList.toggle('visible', name !== 'date');
-  if (name === 'date') document.getElementById('header-title').textContent = 'ATTRIBUTION';
+  if (name === 'commercial') document.getElementById('header-title').textContent = 'ATTRIBUTION';
 }
 
 function goToStep(name) {
@@ -571,8 +581,9 @@ function goBack() {
   const active = document.querySelector('.screen.active');
   if (!active) return;
   const id = active.id;
-  if (id === 'screen-cp')   goToStep('date');
-  if (id === 'screen-list') goToStep('cp');
+ if (id === 'screen-date') goToStep('commercial');
+if (id === 'screen-cp')   goToStep('date');
+if (id === 'screen-list') goToStep('cp');
 }
 
 // ============================================================
