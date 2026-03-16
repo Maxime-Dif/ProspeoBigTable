@@ -438,14 +438,14 @@ function renderList() {
 
       const distVal  = c.dist < 1 ? '< 1' : c.dist.toFixed(1);
 
-      item.innerHTML = \`
+      item.innerHTML = `
         <div class="checkbox"><span class="checkmark">✓</span></div>
         <div class="client-info">
-          <div class="client-name">\${esc(c.name)}</div>
-          <div class="client-cp">\${c.cp}</div>
+          <div class="client-name">${esc(c.name)}</div>
+          <div class="client-cp">${c.cp}</div>
         </div>
-        <div class="client-dist">\${distVal}<span class="dist-unit">km</span></div>
-      \`;
+        <div class="client-dist">${distVal}<span class="dist-unit">km</span></div>
+      `;
       item.addEventListener('click', () => toggleItem(item, c.rowId));
       listEl.appendChild(item);
     });
