@@ -327,8 +327,8 @@ let cpTimer         = null;
 // ============================================================
 window.addEventListener('load', function() {
   // Lire le Row ID depuis l'URL : lien/ROWID
-  const parts = window.location.pathname.split('/').filter(Boolean);
-  const rowId = parts[parts.length - 1] || '';
+  const params = new URLSearchParams(window.location.search);
+const rowId = params.get('id') || '';
 
   // Vérifier existence + statut actif dans USERS_DATA
   const user = USERS_DATA[rowId];
