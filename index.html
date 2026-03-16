@@ -212,7 +212,16 @@ body {
   <div class="access-title">Accès non autorisé</div>
   <div class="access-sub">Ce lien n'est pas valide ou votre compte est inactif.</div>
 </div>
-
+<!-- ÉTAPE 0 — COMMERCIAL -->
+<div class="screen" id="screen-commercial">
+  <div class="body">
+    <div class="section-label">Étape 1 / 4</div>
+    <div class="section-title">Choisir le commercial</div>
+    <select id="commercial-select" style="width:100%;padding:12px 14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;border:2px solid #E8E8E8;border-radius:12px;background:white;color:#1A1A1A;outline:none;appearance:none;-webkit-appearance:none;">
+      <option value="">— Sélectionner —</option>
+    </select>
+  </div>
+</div>
 <!-- ÉTAPE 1 — DATE -->
 <div class="screen" id="screen-date">
   <div class="body">
@@ -503,11 +512,10 @@ async function submitAttribution() {
   };
 
   try {
-    const resp = await fetch(APPS_SCRIPT_URL, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(payload)
-    });
+   const resp = await fetch(APPS_SCRIPT_URL, {
+  method: 'POST',
+  body: new URLSearchParams({ data: JSON.stringify(payload) })
+});
     const data = await resp.json();
     if (data.success) {
       showSuccess(selectedIds.size);
